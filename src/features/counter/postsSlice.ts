@@ -1,26 +1,22 @@
 /* eslint-disable no-param-reassign */
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getPosts, getUserPosts } from '../../api/posts';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { getPosts } from '../../api/posts';
 import { Post } from '../../types/Post';
 
 type PostsState = {
-  allPosts: Post[];
-  postsByUser: Post[];
-  loading: {
+  items: Post[];
+  loaded: {
     allPosts: boolean;
-    postsByUser: boolean;
   };
-  error: string | null;
+  hasError: string | null;
 };
 
 const initialState: PostsState = {
-  allPosts: [],
-  postsByUser: [],
-  loading: {
+  items: [],
+  loaded: {
     allPosts: false,
-    postsByUser: false,
   },
-  error: null,
+  hasError: null,
 };
 
 export const fetchPostsThunk = createAsyncThunk<Post[]>(
@@ -30,51 +26,26 @@ export const fetchPostsThunk = createAsyncThunk<Post[]>(
   },
 );
 
-export const fetchUserPostsThunk = createAsyncThunk<Post[], number>(
-  'posts/fetchByUser',
-  async userId => {
-    return getUserPosts(userId);
-  },
-);
-
 const postsSlice = createSlice({
   name: 'posts',
   initialState,
-  reducers: {
-    setPost: (state, action: PayloadAction<Post[]>) => {
-      state.postsByUser = action.payload;
-    },
-  },
+  reducers: {},
 
   extraReducers: builder => {
     builder
       .addCase(fetchPostsThunk.pending, state => {
-        state.loading.allPosts = true;
-        state.error = null;
+        state.loaded.allPosts = true;
+        state.hasError = null;
       })
       .addCase(fetchPostsThunk.fulfilled, (state, action) => {
-        state.allPosts = action.payload;
-        state.loading.allPosts = false;
+        state.items = action.payload;
+        state.loaded.allPosts = false;
       })
       .addCase(fetchPostsThunk.rejected, (state, action) => {
-        state.loading.allPosts = false;
-        state.error = action.error.message || 'Failed to load posts';
-      })
-
-      .addCase(fetchUserPostsThunk.pending, state => {
-        state.loading.postsByUser = true;
-        state.error = null;
-      })
-      .addCase(fetchUserPostsThunk.fulfilled, (state, action) => {
-        state.postsByUser = action.payload;
-        state.loading.postsByUser = false;
-      })
-      .addCase(fetchUserPostsThunk.rejected, (state, action) => {
-        state.loading.postsByUser = false;
-        state.error = action.error.message || 'Failed to load posts';
+        state.loaded.allPosts = false;
+        state.hasError = action.error.message || 'Failed to load posts';
       });
   },
 });
 
 export default postsSlice.reducer;
-export const { setPost } = postsSlice.actions;

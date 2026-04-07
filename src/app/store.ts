@@ -5,12 +5,16 @@ import usersReducer from '../features/counter/usersSlice';
 import postsReducer from '../features/counter/postsSlice';
 import commentsReducer from '../features/counter/commentsSlice';
 import selectedPostReducer from '../features/counter/selectedPostSlice';
+import authorReducer from '../features/counter/authorSlice';
+import postsByUserReducer from '../features/counter/postByUserSlice';
 
 export const store = configureStore({
   reducer: {
     counter: counterReducer,
     users: usersReducer,
+    author: authorReducer,
     posts: postsReducer,
+    postsByUser: postsByUserReducer,
     comments: commentsReducer,
     selectedPost: selectedPostReducer,
   },

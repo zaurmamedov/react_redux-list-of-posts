@@ -12,21 +12,25 @@ import { UserSelector } from './components/UserSelector';
 import { Loader } from './components/Loader';
 import { Post } from './types/Post';
 import { useAppDispatch, useAppSelector } from './app/hooks';
-import * as usersActions from './features/counter/usersSlice';
-import { fetchUserPostsThunk, setPost } from './features/counter/postsSlice';
+import * as authorActions from './features/counter/authorSlice';
+// eslint-disable-next-line max-len
+import {
+  fetchUserPostsThunk,
+  setPost,
+} from './features/counter/postByUserSlice';
 import { setSelectedPost } from './features/counter/selectedPostSlice';
 
 export const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const selectedPost = useAppSelector<Post | null>(state => state.selectedPost);
 
-  const { author } = useAppSelector(state => state.users);
+  const { author } = useAppSelector(state => state.author);
 
   const {
     postsByUser,
     loading: postsLoading,
     error: postsError,
-  } = useAppSelector(state => state.posts);
+  } = useAppSelector(state => state.postsByUser);
 
   useEffect(() => {
     dispatch(setSelectedPost(null));
@@ -49,7 +53,7 @@ export const App: React.FC = () => {
               <div className="block">
                 <UserSelector
                   value={author}
-                  onChange={user => dispatch(usersActions.setAuthor(user))}
+                  onChange={user => dispatch(authorActions.setAuthor(user))}
                 />
               </div>
 

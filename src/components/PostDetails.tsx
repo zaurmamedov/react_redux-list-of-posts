@@ -19,9 +19,9 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
   const dispatch = useAppDispatch();
 
   const {
-    comments,
-    loading: commentsLoading,
-    error: commentsError,
+    items: comments,
+    loaded,
+    hasError,
   } = useAppSelector(state => state.comments);
 
   const [visible, setVisible] = useState(false);
@@ -43,7 +43,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
     ).unwrap();
   };
 
-  const deleteComment = async (commentId: number) => {
+  const deleteComment = (commentId: number) => {
     dispatch(deleteCommentThunk(commentId));
   };
 
@@ -56,21 +56,21 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
       </div>
 
       <div className="block">
-        {commentsLoading && <Loader />}
+        {loaded && <Loader />}
 
-        {!commentsLoading && commentsError && (
+        {!loaded && hasError && (
           <div className="notification is-danger" data-cy="CommentsError">
             Something went wrong
           </div>
         )}
 
-        {!commentsLoading && !commentsError && comments.length === 0 && (
+        {!loaded && !hasError && comments.length === 0 && (
           <p className="title is-4" data-cy="NoCommentsMessage">
             No comments yet
           </p>
         )}
 
-        {!commentsLoading && !commentsError && comments.length > 0 && (
+        {!loaded && !hasError && comments.length > 0 && (
           <>
             <p className="title is-4">Comments:</p>
 
@@ -104,7 +104,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
           </>
         )}
 
-        {!commentsLoading && !commentsError && !visible && (
+        {!loaded && !hasError && !visible && (
           <button
             data-cy="WriteCommentButton"
             type="button"
@@ -115,7 +115,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
           </button>
         )}
 
-        {!commentsLoading && !commentsError && visible && (
+        {!loaded && !hasError && visible && (
           <NewCommentForm onSubmit={addComment} />
         )}
       </div>

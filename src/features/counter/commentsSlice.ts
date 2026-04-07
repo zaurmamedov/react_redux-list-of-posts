@@ -9,15 +9,15 @@ import {
 import { Comment } from '../../types/Comment';
 
 type CommentsState = {
-  comments: Comment[];
-  loading: boolean;
-  error: string | null;
+  items: Comment[];
+  loaded: boolean;
+  hasError: string | null;
 };
 
 const initialState: CommentsState = {
-  comments: [],
-  loading: false,
-  error: null,
+  items: [],
+  loaded: false,
+  hasError: null,
 };
 
 export const fetchCommentsThunk = createAsyncThunk<Comment[], number>(
@@ -52,26 +52,26 @@ const commentsSlice = createSlice({
     builder
       // GET
       .addCase(fetchCommentsThunk.pending, state => {
-        state.loading = true;
-        state.error = null;
+        state.loaded = true;
+        state.hasError = null;
       })
       .addCase(fetchCommentsThunk.fulfilled, (state, action) => {
-        state.comments = action.payload;
-        state.loading = false;
+        state.items = action.payload;
+        state.loaded = false;
       })
       .addCase(fetchCommentsThunk.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Error';
+        state.loaded = false;
+        state.hasError = action.error.message || 'Error';
       })
 
       // CREATE
       .addCase(createCommentThunk.fulfilled, (state, action) => {
-        state.comments.push(action.payload);
+        state.items.push(action.payload);
       })
 
       // DELETE
       .addCase(deleteCommentThunk.fulfilled, (state, action) => {
-        state.comments = state.comments.filter(
+        state.items = state.items.filter(
           comment => comment.id !== action.payload,
         );
       });
