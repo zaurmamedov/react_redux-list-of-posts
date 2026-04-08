@@ -4,19 +4,15 @@ import { User } from '../../types/User';
 import { getUsers } from '../../api/users';
 
 type UsersState = {
-  users: User[];
-  loading: {
-    users: boolean;
-  };
-  error: string | null;
+  items: User[];
+  loaded: boolean;
+  hasError: string | null;
 };
 
 const initialState: UsersState = {
-  users: [],
-  loading: {
-    users: false,
-  },
-  error: null,
+  items: [],
+  loaded: false,
+  hasError: null,
 };
 
 export const fetchUsersThunk = createAsyncThunk<User[]>(
@@ -34,16 +30,16 @@ const usersSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(fetchUsersThunk.pending, state => {
-        state.loading.users = true;
-        state.error = null;
+        state.loaded = true;
+        state.hasError = null;
       })
       .addCase(fetchUsersThunk.fulfilled, (state, action) => {
-        state.users = action.payload;
-        state.loading.users = false;
+        state.items = action.payload;
+        state.loaded = false;
       })
       .addCase(fetchUsersThunk.rejected, (state, action) => {
-        state.loading.users = false;
-        state.error = action.error.message || 'Failed to load users';
+        state.loaded = false;
+        state.hasError = action.error.message || 'Failed to load users';
       });
   },
 });

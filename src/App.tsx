@@ -21,7 +21,7 @@ export const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const selectedPost = useAppSelector<Post | null>(state => state.selectedPost);
 
-  const { author } = useAppSelector(state => state.author);
+  const { items: author } = useAppSelector(state => state.author);
 
   const {
     items: posts,

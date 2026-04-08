@@ -4,15 +4,15 @@ import { User } from '../../types/User';
 import { getUser } from '../../api/users';
 
 type AuthorState = {
-  author: User | null;
-  loading: boolean;
-  error: string | null;
+  items: User | null;
+  loaded: boolean;
+  hasError: string | null;
 };
 
 const initialState: AuthorState = {
-  author: null,
-  loading: false,
-  error: null,
+  items: null,
+  loaded: false,
+  hasError: null,
 };
 
 export const fetchAuthorThunk = createAsyncThunk<User, number>(
@@ -27,23 +27,23 @@ const authorSlice = createSlice({
   initialState,
   reducers: {
     setAuthor: (state, action: PayloadAction<User | null>) => {
-      state.author = action.payload;
+      state.items = action.payload;
     },
   },
 
   extraReducers: builder => {
     builder
       .addCase(fetchAuthorThunk.pending, state => {
-        state.loading = true;
-        state.error = null;
+        state.loaded = true;
+        state.hasError = null;
       })
       .addCase(fetchAuthorThunk.fulfilled, (state, action) => {
-        state.author = action.payload;
-        state.loading = false;
+        state.items = action.payload;
+        state.loaded = false;
       })
       .addCase(fetchAuthorThunk.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to load author';
+        state.loaded = false;
+        state.hasError = action.error.message || 'Failed to load author';
       });
   },
 });

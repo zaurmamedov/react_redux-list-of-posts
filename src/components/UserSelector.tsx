@@ -14,7 +14,7 @@ export const UserSelector: React.FC<Props> = ({
   onChange,
 }) => {
   const dispatch = useAppDispatch();
-  const { users } = useAppSelector(state => state.users);
+  const { items: users } = useAppSelector(state => state.users);
 
   useEffect(() => {
     dispatch(fetchUsersThunk());
