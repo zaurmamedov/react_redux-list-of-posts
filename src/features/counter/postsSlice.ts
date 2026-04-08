@@ -1,51 +1,52 @@
 /* eslint-disable no-param-reassign */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getPosts } from '../../api/posts';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { getUserPosts } from '../../api/posts';
 import { Post } from '../../types/Post';
 
-type PostsState = {
+type Posts = {
   items: Post[];
-  loaded: {
-    allPosts: boolean;
-  };
+  loaded: boolean;
   hasError: string | null;
 };
 
-const initialState: PostsState = {
+const initialState: Posts = {
   items: [],
-  loaded: {
-    allPosts: false,
-  },
+  loaded: false,
   hasError: null,
 };
 
-export const fetchPostsThunk = createAsyncThunk<Post[]>(
-  'posts/fetchAll',
-  async () => {
-    return getPosts();
+export const fetchUserPostsThunk = createAsyncThunk<Post[], number>(
+  'posts/fetchByUser',
+  async userId => {
+    return getUserPosts(userId);
   },
 );
 
 const postsSlice = createSlice({
   name: 'posts',
   initialState,
-  reducers: {},
+  reducers: {
+    setPost: (state, action: PayloadAction<Post[]>) => {
+      state.items = action.payload;
+    },
+  },
 
   extraReducers: builder => {
     builder
-      .addCase(fetchPostsThunk.pending, state => {
-        state.loaded.allPosts = true;
+      .addCase(fetchUserPostsThunk.pending, state => {
+        state.loaded = true;
         state.hasError = null;
       })
-      .addCase(fetchPostsThunk.fulfilled, (state, action) => {
+      .addCase(fetchUserPostsThunk.fulfilled, (state, action) => {
         state.items = action.payload;
-        state.loaded.allPosts = false;
+        state.loaded = false;
       })
-      .addCase(fetchPostsThunk.rejected, (state, action) => {
-        state.loaded.allPosts = false;
+      .addCase(fetchUserPostsThunk.rejected, (state, action) => {
+        state.loaded = false;
         state.hasError = action.error.message || 'Failed to load posts';
       });
   },
 });
 
 export default postsSlice.reducer;
+export const { setPost } = postsSlice.actions;

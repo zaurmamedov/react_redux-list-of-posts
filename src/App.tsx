@@ -14,10 +14,7 @@ import { Post } from './types/Post';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import * as authorActions from './features/counter/authorSlice';
 // eslint-disable-next-line max-len
-import {
-  fetchUserPostsThunk,
-  setPost,
-} from './features/counter/postByUserSlice';
+import { fetchUserPostsThunk, setPost } from './features/counter/postsSlice';
 import { setSelectedPost } from './features/counter/selectedPostSlice';
 
 export const App: React.FC = () => {
@@ -27,10 +24,10 @@ export const App: React.FC = () => {
   const { author } = useAppSelector(state => state.author);
 
   const {
-    postsByUser,
-    loading: postsLoading,
-    error: postsError,
-  } = useAppSelector(state => state.postsByUser);
+    items: posts,
+    loaded,
+    hasError,
+  } = useAppSelector(state => state.posts);
 
   useEffect(() => {
     dispatch(setSelectedPost(null));
@@ -42,7 +39,7 @@ export const App: React.FC = () => {
     }
   }, [author, dispatch]);
 
-  const postsToShow = postsByUser || [];
+  const postsToShow = posts || [];
 
   return (
     <main className="section">
@@ -60,9 +57,9 @@ export const App: React.FC = () => {
               <div className="block" data-cy="MainContent">
                 {!author && <p data-cy="NoSelectedUser">No user selected</p>}
 
-                {author && postsLoading.postsByUser && <Loader />}
+                {author && loaded && <Loader />}
 
-                {postsError && (
+                {hasError && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"
@@ -71,20 +68,13 @@ export const App: React.FC = () => {
                   </div>
                 )}
 
-                {!postsLoading.postsByUser &&
-                  !postsError &&
-                  postsToShow.length === 0 && (
-                  <div
-                    className="notification is-warning"
-                    data-cy="NoPostsYet"
-                  >
-                      No posts yet
+                {!loaded && !hasError && postsToShow.length === 0 && (
+                  <div className="notification is-warning" data-cy="NoPostsYet">
+                    No posts yet
                   </div>
                 )}
 
-                {!postsLoading.postsByUser &&
-                  !postsError &&
-                  postsToShow.length > 0 && (
+                {!loaded && !hasError && postsToShow.length > 0 && (
                   <PostsList
                     posts={postsToShow}
                     selectedPostId={selectedPost?.id}
